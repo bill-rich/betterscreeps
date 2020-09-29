@@ -10,6 +10,15 @@ class utilFunctions {
     return rooms
   }
 
+  allFreeResources(){
+    let resources = []
+    for(let room of this.allKnownRooms()){
+      let roomResources = room.find(FIND_DROPPED_RESOURCES)
+      resources = resources.concat(roomResources)
+    }
+    return resources
+  }
+
   allSources(){
     let sources = []
     for(let room of this.allKnownRooms()){
@@ -52,6 +61,42 @@ class utilFunctions {
       }
     }
     return creeps
+  }
+
+  allMyControllers(){
+    let allControllers = []
+    for(let room of this.allKnownRooms()){
+      let controllers = room.find(FIND_CONTROLLER, {                                    
+        filter: (struct) => {                                                      
+          return (                                                                 
+            struct.my                                                              
+          )                                                                        
+        }                                                                          
+      })  
+      allControllers = allcontrollers.concat(controllers)
+    }
+    return allControllers
+  }
+
+  isTargeted(source){
+    let count = 0
+    for(let name in Game.creeps){
+      let creep = Game.creeps[name]
+      if(creep.memory.miningTarget == source.id){
+        count++
+      }
+    }
+    return count
+  }
+
+  isMiningTargeted(source){
+    for(let name in Game.creeps){
+      let creep = Game.creeps[name]
+      if(creep.memory.miningTarget == source.id){
+        return true
+      }
+    }
+    return false
   }
 }
 

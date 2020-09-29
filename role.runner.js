@@ -12,20 +12,21 @@ module.exports = class {
   }
 
   run(creep){
-    let currentTarget = Game.getObjectById(creep.memory.towTarget)
+    let currentTarget = Game.getObjectById(creep.memory.target)
     if(currentTarget && !currentTarget.memory.dest){
-      creep.memory.towTarget = ""
+      creep.memory.target = ""
     }
-    if(!creep.memory.towTarget){
-      for(let name in Game.creeps){
-        let target = Game.creeps[name]
-        if(target.memory.dest && !this.creepTowed(target)){
-          creep.memory.towTarget = target.id
+    if(!creep.memory.target){
+      creep.pos.findClosestByPath(FIND_MY_CREEPS, {
+        filter: (towCreep) => {
+          return (!util.isTargeted(towCreep) &&
+                  creep.memory.dest
+          )
         }
-      }
+      })
     }
-    if(creep.memory.towTarget){
-      let target = Game.getObjectById(creep.memory.towTarget)
+    if(creep.memory.target){
+      let target = Game.getObjectById(creep.memory.target)
 			if(creep.pull(target) == ERR_NOT_IN_RANGE) {
 				creep.moveTo(target);
 			} else {
@@ -38,16 +39,6 @@ module.exports = class {
 				}
 			}
 		}
-  }
-
-  creepTowed(creep){
-    for(let runner of this.find()){
-      if(runner.towTarget == creep.id){
-        return true
-        break
-      }
-    }
-    return false
   }
 }
 
