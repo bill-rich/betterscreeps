@@ -1,13 +1,23 @@
 var roleMiner  = require('role.miner')
 var roleRunner = require('role.runner')
+var roleCarry = require('role.carry')
+var roleConstructor = require('role.constructor')
 
 global.miner =  new roleMiner()
 global.runner = new roleRunner()
+global.carry = new roleCarry()
+global.constructor = new roleConstructor()
 
 var MIN_ATTACKERS = 0
 
 
 global.CREEP_TYPES = {
+  carry: {
+    body          : [CARRY],
+    maxMultiplier : 9999,
+    memory        : { role: "carry" },
+    object        : carry
+  },
   miner: {
     body          : [WORK],
     maxMultiplier : 5,
@@ -19,7 +29,13 @@ global.CREEP_TYPES = {
     maxMultiplier : 9999,
     memory        : { role: "runner" },
     object        : runner
-  }
+  },
+  constructor: {
+    body          : [WORK],
+    maxMultiplier : 9999,
+    memory        : { role: "constructor" },
+    object        : constructor
+  },
 }
 
 StructureSpawn.prototype.spawnCreeps = function() {
