@@ -66,14 +66,15 @@ class utilFunctions {
   allMyControllers(){
     let allControllers = []
     for(let room of this.allKnownRooms()){
-      let controllers = room.find(FIND_CONTROLLER, {                                    
+      let controllers = room.find(FIND_STRUCTURES, {                                    
         filter: (struct) => {                                                      
           return (                                                                 
+            struct.structureType == STRUCTURE_CONTROLLER &&
             struct.my                                                              
           )                                                                        
         }                                                                          
       })  
-      allControllers = allcontrollers.concat(controllers)
+      allControllers = allControllers.concat(controllers)
     }
     return allControllers
   }
@@ -82,7 +83,7 @@ class utilFunctions {
     let count = 0
     for(let name in Game.creeps){
       let creep = Game.creeps[name]
-      if(creep.memory.miningTarget == source.id){
+      if(creep.memory.target == source.id){
         count++
       }
     }

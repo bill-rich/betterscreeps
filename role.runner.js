@@ -30,6 +30,10 @@ module.exports = class {
     }
     if(creep.memory.target){
       let target = Game.getObjectById(creep.memory.target)
+      if(!target){
+        creep.memory.target = ""
+        return
+      }
 			if(creep.pull(target) == ERR_NOT_IN_RANGE){
 				creep.moveTo(target);
 			} else {

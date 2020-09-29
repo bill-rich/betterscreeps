@@ -13,6 +13,7 @@ module.exports = class {
 
   run(creep){
     if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
+      console.log("???")
       creep.memory.delivering = true
     }
     if(creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0){
@@ -21,14 +22,15 @@ module.exports = class {
     // If the creep isn't empty and its not currently delivering
     if(!creep.memory.delivering){
       if(!creep.memory.pickupTarget){
-        let pickUpTarget = creep.pos.getClosesByPath(util.allFreeResources(), {
+        let pickupTarget = creep.pos.findClosestByPath(util.allFreeResources(), {
           filter: (source) => {
-            (source.amount && source.amount > 0) || 
-            (source.store && source.store.getUsedCapacite(RESOURCE_ENERGY) > 0)
+            return ((source.amount && source.amount > 0) || 
+            (source.store && source.store.getUsedCapacity(RESOURCE_ENERGY) > 0))
           }
         })
-        if(pickUpTarget.length > 0){
-          creep.memory.pickupTarget = pickupTarget[0]
+        console.log(pickupTarget.id)
+        if(pickupTarget){
+          creep.memory.pickupTarget = pickupTarget.id
         }
       }
       if(creep.memory.pickupTarget){
@@ -37,7 +39,7 @@ module.exports = class {
         if(result == ERR_NOT_IN_RANGE){
           creep.memory.dest = target.pos
         }
-        if(target && (target.amount == 0 || (target.store && target.store.getFreeCapcity(RESOURCE_ENERGY) == 0))){
+        if(!target || (target.amount == 0 || (target.store && target.store.getFreeCapcity(RESOURCE_ENERGY) == 0))){
           creep.memory.target       = ""
           creep.memory.pickupTarget = ""
           creep.memory.dest = ""
@@ -59,9 +61,11 @@ module.exports = class {
                     !util.isTargeted(struct)
           }
         })
-        if(target.length > 0){
-          creep.memory.target = target[0].id
-          creep.memory.dest = target[0].pos
+        if(target){
+          creep.memory.target = target.id
+          creep.memory.dest = target.pos
+        } else {
+          creep.memory.dest = ""
         }
       }
       if(!creep.memory.target){
@@ -71,7 +75,7 @@ module.exports = class {
                     creep.store.getFreeCapacity(RESOURCE_ENERGY) > 0 &&
                     !util.isTargeted(struct))
           }
-        })[0]
+        })
       }
       if(creep.memory.target){
         let target = Game.getObjectById(creep.memory.target)

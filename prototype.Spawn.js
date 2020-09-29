@@ -54,7 +54,13 @@ StructureSpawn.prototype.spawnCreeps = function() {
 }
 
 StructureSpawn.prototype.spawn = function(creepType) {
-  if(CREEP_TYPES[creepType]["object"].find().length < CREEP_TYPES[creepType]["object"].wanted()){
+  _.forEach( CREEP_TYPES, (value, key, map) => {
+    if(value["object"].find().length + Memory.globals.spawnQueue.filter(queue => queue == key) < value["object"].wanted()){
+      Memory.globals.spawnQueue.push(key)
+    }
+  })
+  if(Memory.globals.spawnQueue.length > 0){
+    creepType = Memory.globals.spawnQueue.shift()
     let energyAvailable = this.room.energyAvailable
     let energyCapacity  = this.room.energyCapacityAvailable
     let bodyUnit        = CREEP_TYPES[creepType]["body"]

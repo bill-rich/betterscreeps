@@ -8,7 +8,7 @@ module.exports = class {
   }
 
   wanted(){
-    1
+    return 1
   }
 
   run(creep){
@@ -17,25 +17,26 @@ module.exports = class {
       creep.memory.target = ""
     }
     let sites = _.sortBy(Game.costructionSites, site => site.getRangeTo(creep))
-    if(sites){
+    if(sites.length > 0){
       creep.memory.target = sites[0].id
     }
     if(!creep.memory.target){
       let controllers = _.sortBy(util.allMyControllers(), controller => util.isTargeted(controller))
-      creep.memory.target = controllers[0]
+      creep.memory.target = controllers[0].id
     }
     target = Game.getObjectById(creep.memory.target)
     let result = ""
-    if(target.structureType = STRUCTURE_CONTROLLER){
-      result = creep.upgrade(target)
+    if(target && target.structureType == STRUCTURE_CONTROLLER){
+      result = creep.upgradeController(target)
     } else if(target) {
       result = creep.build(target)
     }
-    if(result = ERR_NOT_IN_RANGE) {
-      dest = target.pos
+    console.log(result)
+    if(result == ERR_NOT_IN_RANGE) {
+      creep.memory.dest = target.pos
     }
-    if(result = OK ) {
-      dest = ""
+    if(result == OK ) {
+      creep.memory.dest = ""
     }
   }
 

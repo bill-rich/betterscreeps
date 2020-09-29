@@ -14,6 +14,7 @@ module.exports.loop = function () {
 function creepTasks(){
   for(let creepType in CREEP_TYPES){
     for(let creep of CREEP_TYPES[creepType]["object"].find()){
+      console.log(creep)
       CREEP_TYPES[creepType]["object"].run(creep)
     }
   }
@@ -38,7 +39,7 @@ function pruneMemory(){
 }
 
 function setUpMemory() {
-  let memoryArrays = [ "ignoreRoom", "enemyRoom", "allies" ]
+  let memoryArrays = [ "ignoreRoom", "enemyRoom", "allies", "spawnQueue" ]
 
   if(Memory.globals == undefined){
     Memory.globals = {}
