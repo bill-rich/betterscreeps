@@ -14,19 +14,12 @@ module.exports = class {
   run(creep){
     if(!creep.memory.miningTarget){
       let sources = _.sortBy(util.allSources(), source => source.pos.getRangeTo(creep.pos))
-      for(let source of sources){
+      sources.forEach(source => {
         let found = false
-        for(let name in Game.creeps){
-          let creep = Game.creeps[name]
-          if(creep.memory.miningTarget == source.id){
-            found = true
-            break
-          }
-        }
-        if(!found){
+        if(!util.isMiningTargeted(source)){
           creep.memory.miningTarget = source.id
         }
-      }
+      })
     } 
     let source = Game.getObjectById(creep.memory.miningTarget)
     if(creep.harvest(source) == ERR_NOT_IN_RANGE){

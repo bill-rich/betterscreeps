@@ -13,7 +13,6 @@ module.exports = class {
 
   run(creep){
     if(creep.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
-      console.log("???")
       creep.memory.delivering = true
     }
     if(creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0){
@@ -21,28 +20,26 @@ module.exports = class {
     }
     // If the creep isn't empty and its not currently delivering
     if(!creep.memory.delivering){
-      if(!creep.memory.pickupTarget){
-        let pickupTarget = creep.pos.findClosestByPath(util.allFreeResources(), {
+      if(!creep.memory.target){
+        let target = creep.pos.findClosestByPath(util.allFreeResources(), {
           filter: (source) => {
             return ((source.amount && source.amount > 0) || 
             (source.store && source.store.getUsedCapacity(RESOURCE_ENERGY) > 0))
           }
         })
-        console.log(pickupTarget.id)
-        if(pickupTarget){
-          creep.memory.pickupTarget = pickupTarget.id
+        if(target){
+          creep.memory.target = target.id
         }
       }
-      if(creep.memory.pickupTarget){
-        let target = Game.getObjectById(creep.memory.pickupTarget)
+      if(creep.memory.target){
+        let target = Game.getObjectById(creep.memory.target)
         let result = creep.pickup(target)
         if(result == ERR_NOT_IN_RANGE){
           creep.memory.dest = target.pos
         }
         if(!target || (target.amount == 0 || (target.store && target.store.getFreeCapcity(RESOURCE_ENERGY) == 0))){
-          creep.memory.target       = ""
-          creep.memory.pickupTarget = ""
-          creep.memory.dest = ""
+          creep.memory.target = ""
+          creep.memory.dest   = ""
         }
       }
     }
@@ -50,6 +47,7 @@ module.exports = class {
     if(creep.memory.delivering){
       // Find a target. First refill spawns and extensions, then builders
       if(!creep.memory.target){
+        // First try to restock spawns and extentions
         let target = creep.pos.findClosestByPath(FIND_STRUCTURES, {
           filter: (struct) => {
             if(!struct.store){
@@ -61,12 +59,24 @@ module.exports = class {
                     !util.isTargeted(struct)
           }
         })
-        if(target){
-          creep.memory.target = target.id
-          creep.memory.dest = target.pos
-        } else {
-          creep.memory.dest = ""
+      }
+      // If there are no spawns or extensions that need to be restocked, try creeps
+      if(!creep.memory.target){
+        let sortedCreeps = _.sortBy(util.findCreepsByRole("constructor"), targetCreep => creep.pos.getRangeTo(targetCreep.pos))
+        for(let targetCreep of sortedCreeps){
+      console.log(targetCreep.store.getFreeCapacity(RESOURCE_ENERGY))
+          if(targetCreep.store.getFreeCapacity(RESOURCE_ENERGY) > 0){
+            creep.memory.target = targetCreep.id
+            break
+          }
         }
+      }
+      let target = Game.getObjectById(creep.memory.target)
+      if(target){
+        creep.memory.target = target.id
+        creep.memory.dest = target.pos
+      } else {
+        creep.memory.dest = ""
       }
       if(!creep.memory.target){
         creep.memory.target = creep.pos.findClosestByPath(FIND_MY_CREEPS, {
@@ -80,7 +90,6 @@ module.exports = class {
       if(creep.memory.target){
         let target = Game.getObjectById(creep.memory.target)
         let result = creep.transfer(target, RESOURCE_ENERGY)
-        console.log(result)
         if(result == OK || target.store.getFreeCapacity(RESOURCE_ENERGY) == 0){
           creep.memory.dest = ""
           creep.memory.target = ""
@@ -95,7 +104,7 @@ module.exports = class {
   resourceTargeted(resource){
     for(let name in Game.creeps){
       let creep = Game.creeps[name]
-      if(creep.memory.pickupTarget == resource.id) {
+      if(creep.memory.target == resource.id) {
         return true
       }
     }

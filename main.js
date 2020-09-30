@@ -21,21 +21,20 @@ function creepTasks(){
 }
 
 function spawnTasks(){
-  for(let spawn of util.allSpawns()){
-    let result = spawn.spawnCreeps()
-    if(result != OK){
+  util.allSpawns().forEach( spawn => {
+    if(spawn.spawnCreeps() != OK){
       console.log("Error Spawning: " + result)
     }
-  }
+  })
 }
 
 function pruneMemory(){
-  for(let memCreep in Memory.creeps){
-    if(!Game.creeps[memCreep]){
-      console.log("deleting:" + memCreep)
-      delete Memory.creeps[memCreep]
+  _.forEach(Memory.creeps, (memCreep, key) => {
+    if(!Game.creeps[key]){
+      console.log("deleting:" + key)
+      delete Memory.creeps[key]
     }
-  }
+  })
 }
 
 function setUpMemory() {
@@ -45,9 +44,9 @@ function setUpMemory() {
     Memory.globals = {}
   }
 
-  for(let memItem of memoryArrays){
+  memoryArrays.forEach(memItem => {
     if(eval("Memory.globals."+memItem) == undefined){
       eval("Memory.globals."+memItem+"=[]")
     }
-  }
+  })
 }

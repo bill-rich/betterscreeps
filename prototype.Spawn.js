@@ -31,7 +31,7 @@ global.CREEP_TYPES = {
     object        : runner
   },
   constructor: {
-    body          : [WORK],
+    body          : [WORK,CARRY],
     maxMultiplier : 9999,
     memory        : { role: "constructor" },
     object        : constructor
